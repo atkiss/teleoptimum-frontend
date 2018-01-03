@@ -1,0 +1,3 @@
+telefonszamok tabla import:
+SELECT telefonszam_id, telefonszam, ugyfel_id, ervenyesseg_veg FROM teleoptimum.szerzodes_telefonszam_ugyfel where ervenyesseg_veg > '2017-01-31';
+insert into telefonszam (telefonszam_id, telefonszam, ugyfel_id) values (212, 205682000, 286);

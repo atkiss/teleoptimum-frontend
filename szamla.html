@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+      .tetel-table-header {
+          font-size: 12px;
+          font-weight: bold;
+          border-bottom: 1px solid black;
+          background-color: LightGray;
+          text-align: center;
+          height: 40px;
+      }
+      .tetel-table-header > div {
+          border-left: 1px solid black;
+          height: 100%
+      }
+      .tetel-table-header div {
+          height: 100%
+      }
+      .right{
+        float: right;
+      }
+      .left {
+        float: left;
+      }
+      .left-align{
+        text-align: left;
+      }
+      .right-align{
+        text-align: right;
+      }
+      .border-left{
+        border-left: 1px solid black
+      }
+      .gray {
+        background-color: LightGray
+      }
+      .no-border{
+        border:0 !important;
+      }
+      .reszletezo-title {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .sorszam {
+          float: right;
+          font-size:30px;
+          padding-top: 14px;
+      }
+      .sorszam-title {
+          float: right;
+          padding-top: 28px;
+          padding-right: 15px;
+      }
+    </style>
+
+    <title>Teleoptimum</title>
+  </head>
+  <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6">
+        <h2>SZÁMLA</h2>
+      </div>
+      <div class="col-xs-6">
+        <span class="sorszam">00000</span>
+        <span class="sorszam-title">Sorszám: </span>
+      </div>
+    </div>
+    <div class="row" style="border: 1px solid black">
+        <div class="col-xs-6" style="border-right: 1px solid black">
+            A számlakibocsátó neve, címe:<br/>
+            <b>TeleOptimum Kft.</b><br/>
+            <br/>
+            7700 Mohács<br/>
+            Péter utca 27.<br/>
+            <br/>
+            Adószám: 23436686-2-02<br/>
+            <br/>
+            Bankszámla: 10700718-66663027-51100005<br/>
+            <br/>
+            Bank neve: CIB Bank Zrt.<br/>
+            Cégj.szám: 01-09-965601<br/>
+
+        </div>
+        <div class="col-xs-6">
+            Vásárló neve, címe:<br/>
+            <b>Structurail Kft.</b><br/>
+            <br/>
+            7625 Pécs<br/>
+            Dózsa Gy u. 36.<br/>
+            <br/>
+            Adószám: 14692730-2-02<br/>
+        </div>
+    </div>
+    <div class="row" style="font-size: 12px;border-bottom: 1px solid black">
+        <div class="col-xs-2">
+            <b>A fizetés módja:</b><br/>
+            ÁTUTALÁS
+        </div>
+        <div class="col-xs-3">
+            <b>Teljesítés dátuma:</b><br/>
+            2017/01/29
+        </div>
+        <div class="col-xs-2">
+            <b>Számla kelte:</b><br/>
+            2017/01/29
+        </div>
+        <div class="col-xs-3">
+            <b>Fizetés határideje:</b><br/>
+            2017/02/06
+        </div>
+        <div class="col-xs-2 right-align">
+            <b>Pénznem:</b><br/>
+            <span style="font-size: 20px"><b>HUF</b></span>
+        </div>
+    </div>
+    <div class="row tetel-table-header">
+        A termék vagy szolgáltatás
+    </div>
+    <div class="row tetel-table-header">
+        <div class="col-xs-3 no-border">
+            megnevezése, egyéb adatai
+        </div>
+        <div class="col-xs-1">
+            menny
+        </div>
+        <div class="col-xs-1">
+            egyseg
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <div class="col-xs-6">
+                    netto egységár
+                </div>
+                <div class="col-xs-6 border-left">
+                    netto ár
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1">
+            ÁFA kulcs
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <div class="col-xs-6">
+                    ÁFA
+                </div>
+                <div class="col-xs-6 border-left">
+                    Brutto
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="font-size: 12px">
+        <div class="col-xs-3">
+            Apple iPhone SE 16 GB
+        </div>
+        <div class="col-xs-1">
+            1
+        </div>
+        <div class="col-xs-1">
+            Darab
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <div class="col-xs-6">
+                    107 866.00
+                </div>
+                <div class="col-xs-6">
+                    107 866.00
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1">
+            27
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <div class="col-xs-6">
+                    29 123.82
+                </div>
+                <div class="col-xs-6">
+                    136 989.82
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row gray">
+        <div class="col-xs-6">
+            Számlaérték Áfá-val növelten:
+        </div>
+        <div class="col-xs-6 right-align" style="font-size: 32px;font-weight: bold">
+            136 990
+        </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col-xs-12 reszletezo-title">
+          A(z) 00000 sz. szamla reszletezese:
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Terméknév</th>
+                    <th>Egység</th>
+                    <th>Mennyiség</th>
+                    <th>Egység Ár</th>
+                    <th>Áfakulcs</th>
+                    <th>Nettó Ár</th>
+                    <th>Áfa</th>
+                    <th>Brutto Ár</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="8">20-9949-013</td></tr>
+                <tr>
+                    <td>sdfsd sdfds fds,mfnmdsm</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                </tr>
+                <tr>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                </tr>
+                <tr>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                    <td>Table cell</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
+  </body>
+</html>

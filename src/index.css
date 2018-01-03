@@ -1,0 +1,124 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.telenor-szamlacontainer {
+  height: 600px;
+  overflow-y: auto;
+}
+
+.tetel-table-header {
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    background-color: LightGray;
+    text-align: center;
+    height: 40px;
+}
+.tetel-table-header > div {
+    border-left: 1px solid black;
+    height: 100%
+}
+.tetel-table-header div {
+    height: 100%
+}
+.right{
+  float: right;
+}
+.left {
+  float: left;
+}
+.left-align{
+  text-align: left;
+}
+.right-align{
+  text-align: right;
+}
+.border-left{
+  border-left: 1px solid black
+}
+.gray {
+  background-color: LightGray
+}
+.no-border{
+  border:0 !important;
+}
+.reszletezo-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.sorszam {
+    float: right;
+    font-size:30px;
+    padding-top: 14px;
+}
+.sorszam-title {
+    float: right;
+    padding-top: 28px;
+    padding-right: 15px;
+}
+.bold {
+	font-weight: bold;
+}
+
+.szamla {
+
+}
+
+.reszletezo{
+
+}
+
+@page { 
+    counter-increment: page;
+    size: A4 portrait;
+    @bottom-left {
+      margin: 10pt 0 30pt 0;
+      border-top: .25pt solid #666;
+      content: "My book";
+      font-size: 9pt;
+      color: #333;
+    }  
+} 
+
+@bottom-right {
+  content: counter(page);
+}
+
+@bottom-left {
+  margin: 10pt 0 30pt 0;
+  border-top: .25pt solid #666;
+  content: "My book";
+  font-size: 9pt;
+  color: #333;
+}  
+
+#content {
+    display: table;
+}
+
+#pageFooter {
+    display: table-footer-group;
+}
+
+#pageFooter:after {
+    content: counter(page);
+}
+
+@media print {
+	header nav, footer {
+		display: none;
+	}
+
+	.szamla {
+		display: none;
+	}
+
+	.reszletezo {
+		page-break-before: always;
+		counter-reset: page;
+	}
+
+}
