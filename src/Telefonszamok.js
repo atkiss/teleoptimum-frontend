@@ -13,25 +13,34 @@ export default class Telefonszamok extends Component {
         this.highestId = -1;
     }
 
+    prepareHeader(method, body){
+        let myHeaders = new Headers({
+            'Content-Type': 'application/json', 
+            'X-Requested-With': 'XMLHttpRequest',
+            'Access-Control-Request-Headers': 'X-Requested-With',
+            'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password)
+        });
+        let sentData= {
+            method: method,
+            headers: myHeaders,
+            mode: 'cors',
+            credentials: 'include'
+        };
+        if (body){
+            sentData.body = body;
+        }
+        return sentData;
+    }
+
     getTelefonszamok(){
         let fetchedTelefonszamok;
-        fetch(window.CONFIG.backend + '/telefonszamok', {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password),
-                'Content-Type': 'application/json'
-            },
-        }).then((response) => {
+        fetch(window.CONFIG.backend + '/telefonszamok', 
+            this.prepareHeader('GET')
+        ).then((response) => {
             return response.json();
         }).then((telefonszamok) => {
             fetchedTelefonszamok = telefonszamok;
-            return fetch(window.CONFIG.backend + '/ugyfelek', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password),
-                    'Content-Type': 'application/json'
-                }
-            });
+            return fetch(window.CONFIG.backend + '/ugyfelek', this.prepareHeader('GET'));
         }).then((response) => {
             return response.json();
         }).then((ugyfelek) => {
@@ -168,14 +177,7 @@ export default class Telefonszamok extends Component {
 
     remoteCall(body, type){
         let url = window.CONFIG.backend + '/telefonszamok';
-        fetch(url, {
-			method: type,
-			headers: {
-				'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password),
-				'Content-Type': 'application/json'
-			},
-            body: JSON.stringify(body)
-		})
+        fetch(url, this.prepareHeader(type, JSON.stringify(body)))
 		.then((response) => {
 			if (response.ok){
 				this.getTelefonszamok();
