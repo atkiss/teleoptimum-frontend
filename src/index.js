@@ -14,6 +14,7 @@ import SzamlazoExport from './SzamlazoExport';
 import Befizetesek from './Befizetesek';
 import Szamlak from './Szamlak';
 import Merleg from './Merleg';
+import GenerateSzamla from './GenerateSzamla';
 
 class App extends Component {
 
@@ -44,6 +45,8 @@ class App extends Component {
       return <SzamlaGenerator type="browse" user={this.user}/>
     case 'szamlak':
       return <Szamlak user={this.user}/>
+    case 'generate_szamla':
+      return <GenerateSzamla user={this.user}/>
     case 'email':
       return <EmailKuldo user={this.user}/>
     case 'ugyfelek':

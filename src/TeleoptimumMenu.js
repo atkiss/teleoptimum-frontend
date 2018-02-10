@@ -25,6 +25,7 @@ export default class TeleoptimumMenu extends Component {
 							<li><a href="#/upload">Feltöltés</a></li>
 				            <li><a href="#/browse">Böngészés</a></li>
 							<li><a href="#/szamlak">Szamlak</a></li>
+							<li><a href="#/generate_szamla">Szamla Keszites</a></li>
 							<li><a href="#/email">Küldés emailben</a></li>
 						</ul>
 					</li>

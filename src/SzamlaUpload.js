@@ -47,14 +47,14 @@ export default class SzamlaUpload extends Component {
         reader.onloadend = () => {
             let szamlaXml = JsonUtils.xmlToJson(new DOMParser().parseFromString(reader.result, "text/xml"));
             console.log(szamlaXml);
-            this.setState({idoszak: szamlaXml.foszamla.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.foszamla.szamla.fejlec.szamlainfo.sorszam['#text']})
+            this.setState({idoszak: szamlaXml.foszamla.szamla[1].fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.foszamla.szamla[0].fejlec.szamlainfo.sorszam['#text']})
             //this.setState({ idoszak: szamlaXml.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.szamla.fejlec.szamlainfo.sorszam['#text'] })
 
             let rows = [] //this.state.rows; dupla feltoltes
             let telefonszamok = this.state.telefonszamok;
             let brutto = this.state.brutto;
             //szamlaXml.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
-            szamlaXml.foszamla.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
+            szamlaXml.foszamla.szamla[1].tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
                 let telefonszam = item['@attributes'].ctn.trim();
                 telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {} };
                 let forgalmidijTetelek = item.tavkozlesi_szolgaltatasok.forgalmidijak.tetel;
