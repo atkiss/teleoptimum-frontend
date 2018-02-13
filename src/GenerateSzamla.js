@@ -46,15 +46,50 @@ export default class GenerateSzamla extends Component {
             },
             szamlaTetelek: [
                 {
-                    telefonszam: 0,
+                    id: 0,
+                    telefonszam: -1,
                     megnevezes: '',
                     mennyiseg: 0,
                     egyseg: '',
                     nettoegysegar: 0,
-                    afakulcs: 0
+                    afakulcs: 0,
+                    nettoar: 0,
+                    bruttoar: 0,
+                    updateValues() {
+                        this.nettoar = (this.nettoegysegar * this.mennyiseg);
+                        this.bruttoar = (this.nettoegysegar * this.mennyiseg * (100 + this.afakulcs) / 100);
+                    }
                 }
             ] 
         }
+    }
+
+    addNewTetel(){
+        const maxId = this.state.szamla.szamlaTetelek.reduce((max, tetel) => {
+            return tetel.id > max ? tetel.id : max
+        }, 0);
+        const newTetel = {
+            id: maxId+1,
+            telefonszam: 0,
+            megnevezes: '',
+            mennyiseg: 0,
+            egyseg: '',
+            nettoegysegar: 0,
+            afakulcs: 0,
+            nettoar: 0,
+            bruttoar: 0,
+            updateValues() {
+                this.nettoar = (this.nettoegysegar * this.mennyiseg);
+                this.bruttoar = (this.nettoegysegar * this.mennyiseg * (100 + this.afakulcs) / 100);
+            }
+        }
+        this.state.szamla.szamlaTetelek.push(newTetel);
+        this.setState({szamla: this.state.szamla});
+    }
+
+    removeTetel(idx){
+        this.state.szamla.szamlaTetelek.splice(idx, 1);
+        this.setState({szamla: this.state.szamla});
     }
 
     getUgyfelek(){
@@ -106,7 +141,7 @@ export default class GenerateSzamla extends Component {
     renderForm(){
         return (
             <div>
-                <div style={{float: 'left', paddingLeft: '10px'}}>
+                <div className="tetel-editor">
                     <div>Ugyfel</div>
                     <select id="ugyfel" className="form-control" style={{width: "inherit"}}
                             onChange={(event) => this.updateUgyfel(event.target.value)}>
@@ -116,7 +151,7 @@ export default class GenerateSzamla extends Component {
                         })}
                     </select>
                 </div>
-                <div style={{float: 'left', paddingLeft: '10px'}}>
+                <div className="tetel-editor">
                     <div>Fizetesi Mod</div>
                     <select id="fizetesiMod" className="form-control" style={{width: "inherit"}}
                             onChange={(event) => this.updateFizetesiMod(event.target.value)}>
@@ -125,7 +160,7 @@ export default class GenerateSzamla extends Component {
                             <option value="POSTAI_CSEKK">Csekkes</option>
                     </select>
                 </div>
-                <div style={{float: 'left', paddingLeft: '10px'}}>
+                <div className="tetel-editor">
                     <div>Teljesítés</div>
                     <DatePicker id='teljesites' className="form-control"
                         dateFormat="YYYY-MM-DD"
@@ -133,7 +168,7 @@ export default class GenerateSzamla extends Component {
                         onChange={(date) => this.updateDatum(date, 'teljesites')} 
                     />
                 </div>
-                <div style={{float: 'left', paddingLeft: '10px'}}>
+                <div className="tetel-editor">
                     <div>Kelte</div>
                     <DatePicker id='teljesites' className="form-control"
                         dateFormat="YYYY-MM-DD"
@@ -141,7 +176,7 @@ export default class GenerateSzamla extends Component {
                         onChange={(date) => this.updateDatum(date, 'kelte')} 
                     />
                 </div>
-                <div style={{float: 'left', paddingLeft: '10px'}}>
+                <div className="tetel-editor">
                     <div>Határideje</div>
                     <DatePicker id='teljesites' className="form-control"
                         dateFormat="YYYY-MM-DD"
@@ -153,59 +188,61 @@ export default class GenerateSzamla extends Component {
         );
     }
 
-    updateTetel(prop, value){
-        this.state.szamla.szamlaTetelek[0][prop]=value;
+    updateTetel(prop, value, idx){
+        this.state.szamla.szamlaTetelek[idx][prop]=value;
+        this.state.szamla.szamlaTetelek[idx].updateValues();
         this.setState({szamla: this.state.szamla});
     }
 
-    renderTetelForm(){
+    renderTetelForm(szamlaTetel, idx){
         return (
-            <div>
-                <h3>Tetelek</h3>
-                <div>
-                    <div style={{float: 'left', paddingLeft: '10px'}}>
+            <div className="row" key={idx}>
+                    <div className="tetel-editor">
                         <div>Telefonszam</div>
-                        <select id="telefonszam" className="form-control" style={{width: "inherit"}}
-                                 >
-                                <option value="">Choose...</option>
+                        <select id="telefonszam" className="form-control" 
+                                value={szamlaTetel.telefonszam}
+                                onChange={(event) => this.updateTetel("telefonszam", event.target.value, idx)}>
+                                <option value="-1">Choose...</option>
                                 {this.state.telefonszamok.map(telefonszam => {
-                                    return <option key={telefonszam.id} value={telefonszam.telefonszam}>{telefonszam.telefonszam}</option>
+                                    return <option key={telefonszam.telefonszam} value={telefonszam.telefonszam}>{telefonszam.telefonszam}</option>
                                 })}
                         </select>
                     </div>
-                </div>
-                <div>
-                    <div style={{float: 'left', paddingLeft: '10px'}}>
+                    <div className="tetel-editor">
                         <div>Megnevezes</div>
                         <input type="text" id="tetel megnevezes" 
-                               className="form-control"
-                               onChange={(event) => this.updateTetel("megnevezes", event.target.value)}/>
+                               className="form-control" value={szamlaTetel.megnevezes}
+                               onChange={(event) => this.updateTetel("megnevezes", event.target.value, idx)}/>
                     </div>
-                </div>
-                <div>
-                    <div style={{float: 'left', paddingLeft: '10px'}}>
+                    <div className="tetel-editor">
                         <div>Mennyiseg</div>
                         <input type="text" id="tetel megnevezes" 
-                               className="form-control"
-                               onChange={(event) => this.updateTetel("mennyiseg", event.target.value)}/>
+                               className="form-control" value={szamlaTetel.mennyiseg}
+                               onChange={(event) => this.updateTetel("mennyiseg", event.target.value, idx)}/>
                     </div>
-                </div>
-                <div>
-                    <div style={{float: 'left', paddingLeft: '10px'}}>
+                    <div className="tetel-editor">
                         <div>Egyseg</div>
                         <input type="text" id="tetel megnevezes" 
-                               className="form-control"
-                               onChange={(event) => this.updateTetel("egyseg", event.target.value)}/>
+                               className="form-control" value={szamlaTetel.egyseg}
+                               onChange={(event) => this.updateTetel("egyseg", event.target.value, idx)}/>
                     </div>
-                </div>
-                <div>
-                    <div style={{float: 'left', paddingLeft: '10px'}}>
+                    <div className="tetel-editor">
                         <div>Netto Ar</div>
                         <input type="text" id="tetel megnevezes" 
-                               className="form-control"
-                               onChange={(event) => this.updateTetel("nettoegysegar", event.target.value)}/>
+                               className="form-control" value={szamlaTetel.nettoegysegar}
+                               onChange={(event) => this.updateTetel("nettoegysegar", parseInt(event.target.value), idx)}/>
                     </div>
-                </div>
+                    <div className="tetel-editor">
+                        <div>Afakulcs</div>
+                        <input type="text" id="tetel megnevezes" 
+                               className="form-control" value={szamlaTetel.afakulcs}
+                               onChange={(event) => this.updateTetel("afakulcs", parseInt(event.target.value), idx)}/>
+                    </div>
+                    <div className="tetel-editor">
+                    <button type="button" className="btn btn-info" onClick={() => this.removeTetel(idx)}>
+                        <span className="glyphicon glyphicon-minus"></span> Eltavolit
+                    </button>
+                    </div>
             </div>
         );
     }
@@ -219,9 +256,13 @@ export default class GenerateSzamla extends Component {
                         <div className="row">
                             {this.renderForm()}
                         </div>
-                        <div className="row">
-                            {this.renderTetelForm()}
-                        </div>
+                        <h3>Tetelek</h3>
+                        {this.state.szamla.szamlaTetelek.map((tetel, idx) => {
+                            return this.renderTetelForm(tetel, idx);
+                        })}
+                        <button type="button" className="btn btn-info" onClick={this.addNewTetel.bind(this)}>
+                            <span className="glyphicon glyphicon-plus"></span> Uj Tetel
+                        </button>
                     </form>
                     <SzamlaDisplay szamla={this.state.szamla}/>
                 </div>

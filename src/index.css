@@ -71,6 +71,19 @@ body {
 
 }
 
+.tetel-editor {
+  float: left;
+  padding-left: 10px;
+  height: 60px;
+  position: relative;
+}
+
+.tetel-editor button {
+  position: absolute;
+  left: 10px;
+  bottom: 5px;
+}
+
 @page { 
     counter-increment: page;
     size: A4 portrait;
@@ -119,6 +132,6 @@ body {
 	.reszletezo {
 		page-break-before: always;
 		counter-reset: page;
-	}
+  }
 
 }

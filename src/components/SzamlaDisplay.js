@@ -116,7 +116,7 @@ export default class SzamlaDisplay extends Component{
                 {this.props.szamla.szamlaTetelek
                     .map(tetel => {
                         return (
-                            <div key={tetel.telefonszam}>
+                            <div key={tetel.id || tetel.telefonszam}>
                                 <div
                                     className="row"
                                     style={{
