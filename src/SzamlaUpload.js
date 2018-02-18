@@ -5,6 +5,7 @@ import 'whatwg-fetch';
 import JsonUtils from './utils/JsonUtils.js';
 import { korlatlanTarifa, simaTarifa } from './Tarifak';
 import TeleoptimumMenu from './TeleoptimumMenu';
+import {parseString} from 'xml2js';
 
 export default class SzamlaUpload extends Component {
 
@@ -46,20 +47,20 @@ export default class SzamlaUpload extends Component {
         let reader = new FileReader();
         reader.onloadend = () => {
             let szamlaXml = JsonUtils.xmlToJson(new DOMParser().parseFromString(reader.result, "text/xml"));
-            console.log(szamlaXml);
-            this.setState({idoszak: szamlaXml.foszamla.szamla[1].fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.foszamla.szamla[0].fejlec.szamlainfo.sorszam['#text']})
+
+            this.setState({idoszak: szamlaXml.foszamla.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.foszamla.szamla.fejlec.szamlainfo.sorszam['#text']})
             //this.setState({ idoszak: szamlaXml.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.szamla.fejlec.szamlainfo.sorszam['#text'] })
 
             let rows = [] //this.state.rows; dupla feltoltes
             let telefonszamok = this.state.telefonszamok;
             let brutto = this.state.brutto;
             //szamlaXml.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
-            szamlaXml.foszamla.szamla[1].tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
+            szamlaXml.foszamla.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
                 let telefonszam = item['@attributes'].ctn.trim();
-                telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {} };
+                telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
                 let forgalmidijTetelek = item.tavkozlesi_szolgaltatasok.forgalmidijak.tetel;
                 let havidijTetelek = item.tavkozlesi_szolgaltatasok.havidijak.tetel;
-                let mapTetel = function(tetel, tipus) {
+                let mapTetel = (tetel, tipus) => {
                     let row = {};
                     row.id = rows.length + 1;
                     row.telefonszam = telefonszam;
@@ -96,9 +97,13 @@ export default class SzamlaUpload extends Component {
                     if (row.nettoegysegar == 2600 && row.termeknev == 'Üzleti elõfizetés'){
                         telefonszamok[telefonszam].tipus = 'korlatlan';
                     }
+                    if (row.termeknev == 'Üzleti elõfizetés'){
+                        telefonszamok[telefonszam].kartyatipus = 'hangalapu';
+                    }
                     row.szamlaTipus = 'ismeretlen';
                     row.tovabbszamlazva = true;
                     brutto += row.bruttoar;
+                    row = this.editEuRoaming(row);
                     rows.push(row);
                 }
                 JsonUtils.traverseJson(item, mapTetel, '');
@@ -109,6 +114,18 @@ export default class SzamlaUpload extends Component {
 
         // Read in the image file as a data URL.
         reader.readAsText(f);
+    }
+
+    editEuRoaming(row){
+        if (row.termeknev.toLowerCase().includes("roaming") && 
+                row.termeknev.toLowerCase().includes("1. zóna") &&
+                row.nettoegysegar == 8){
+            row.egysegAr = 12.0;
+            row.nettoegysegar = 12.0;
+            row.nettoar = row.egysegAr * row.mennyiseg;
+            row.bruttoar = row.nettoar * (100 + row.afakulcs) / 100;
+        }
+        return row;
     }
 
     checkTelefonszamok() {
@@ -178,8 +195,6 @@ export default class SzamlaUpload extends Component {
             if (currentRow.telefonszam == row.telefonszam && currentRow.termeknev == row.termeknev) {
                 currentRow.mennyiseg += row.mennyiseg;
                 currentRow.nettoar += row.nettoar;
-                currentRow.nettoegysegar += row.nettoegysegar;
-                currentRow.afa += row.afa;
                 currentRow.bruttoar += row.bruttoar;
                 return;
             }
@@ -231,7 +246,7 @@ export default class SzamlaUpload extends Component {
             if (telProp.kedvezmeny > 0) {
                 newRows.push(this.createForgalmidijKedvezmenyTetel(newRows.length + 1, telProp));
             }
-            if (telProp.tipus == 'sima'){
+            if (telProp.tipus == 'sima' && telProp.kartyatipus === "hangalapu"){
                 newRows.push(this.createEgycsoport(newRows.length + 1, telProp, szorzo));
             }
         }

@@ -27,6 +27,7 @@ export const Enums = {
   MOBIL_INTERNET_13G: {id: 'MOBIL_INTERNET_13G', value: 'MOBIL_INTERNET_13G', text: 'MOBIL_INTERNET_13G', title: 'MOBIL_INTERNET_13G', tovabbszamlazva: {sima: true, korlatlan: true}, egyseg: 'honap', mennyiseg: 1},
   MOBIL_INTERNET_24G: {id: 'MOBIL_INTERNET_24G', value: 'MOBIL_INTERNET_24G', text: 'MOBIL_INTERNET_24G', title: 'MOBIL_INTERNET_24G', tovabbszamlazva: {sima: true, korlatlan: true}, egyseg: 'honap', mennyiseg: 1},
   MOBIL_INTERNET_50G: {id: 'MOBIL_INTERNET_50G', value: 'MOBIL_INTERNET_50G', text: 'MOBIL_INTERNET_50G', title: 'MOBIL_INTERNET_50G', tovabbszamlazva: {sima: true, korlatlan: true}, egyseg: 'honap', mennyiseg: 1},
+  MOBIL_INTERNET_UNLIMITED: {id: 'MOBIL_INTERNET_UNLIMITED', value: 'MOBIL_INTERNET_UNLIMITED', text: 'MOBIL_INTERNET_UNLIMITED', title: 'MOBIL_INTERNET_UNLIMITED', tovabbszamlazva: {sima: true, korlatlan: true}, egyseg: 'honap', mennyiseg: 1},
 
   asArrays: (obj) => {
     let ret = [];
@@ -91,6 +92,9 @@ export class TarifaTipusSelector {
         }
         if (tarifaCsomag == "vállalati hipernet pro"){
           return Enums.MOBIL_INTERNET_50G.value;
+        }
+        if (tarifaCsomag == "vállalati hipernet unlimited"){
+          return Enums.MOBIL_INTERNET_UNLIMITED.value;
         }
     }
 

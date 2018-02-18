@@ -17,7 +17,8 @@ export default class Szamlak extends React.Component {
             detailedSzamla: null,
             printUrl: '',
             selectAll: false,
-            nyomtatasiTipus: 'szamla'
+            nyomtatasiTipus: 'szamla',
+            isSelected: false
         }
         this.originSzamlak = [];
         this.fizetesiModok = [ATUTALAS, POSTAI_CSEKK];
@@ -122,6 +123,7 @@ export default class Szamlak extends React.Component {
 
     generateUrls(){
         let params = this.state.szamlak.filter(szamla => szamla.selected).map(szamla => "ids=" + szamla.id).join('&');
+        this.setState({isSelected: !!params})
         switch(this.state.nyomtatasiTipus){
             case 'szamla':
                 this.setState({printUrl: window.CONFIG.backend + '/szamlak/collect/szamla?' + params});
@@ -136,6 +138,27 @@ export default class Szamlak extends React.Component {
                this.setState({printUrl: window.CONFIG.backend + '/szamlak/collect/szamla_melleklet?' + params});
                break;
         }
+    }
+
+    sendEmail(){
+        let params = this.state.szamlak.filter(szamla => szamla.selected).map(szamla => "ids=" + szamla.id).join('&');
+        let url = window.CONFIG.backend + '/szamlak/collect/email?' + params;
+        fetch(url, {
+			method: 'GET',
+			headers: {
+				'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password),
+				'Content-Type': 'application/json'
+			}
+		})
+		.then((response) => {
+			return response.json()
+        })
+        .then(json => {
+            console.log(json);
+		})
+		.catch((ex) => {
+			console.log('email sending failed', ex)
+		});
     }
 
     render(){
@@ -210,7 +233,8 @@ export default class Szamlak extends React.Component {
                                         </label>
                                     </div>
                                     <div className="form-group" style={{marginLeft: "10px"}}>
-                                        <a href={this.state.printUrl} style={{cursor: "pointer", marginRight: "10px"}} target="_blank" className="btn btn-primary">Nyomtat</a>
+                                        <a href={this.state.printUrl} style={{cursor: "pointer", marginRight: "10px"}} target="_blank" disabled={!this.state.isSelected} className="btn btn-primary">Nyomtat</a>
+                                        <a style={{cursor: "pointer", marginRight: "10px"}} onClick={() => this.sendEmail()} disabled={!this.state.isSelected} className="btn btn-primary">Email</a>
                                     </div>
                                 </form>
                             </div>

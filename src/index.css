@@ -132,6 +132,6 @@ body {
 	.reszletezo {
 		page-break-before: always;
 		counter-reset: page;
-  }
+	}
 
 }
