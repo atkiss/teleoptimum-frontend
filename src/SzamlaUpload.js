@@ -80,11 +80,7 @@ export default class SzamlaUpload extends Component {
                         row.mennyiseg = parseMennyiseg(tetel.menny);
                         tetel.mennyegys ? row.egyseg = tetel.mennyegys[0] : row.egyseg = '';
                         row.bruttoar = parseFloat(tetel.bruttoar[0].replace(',', '.'));
-                        row.nettoar = tetel.nettoar ? parseFloat(tetel.nettoar[0].replace(',', '.')) : (function() {
-                            let afa = tetel.afakulcs ? parseInt(tetel.afakulcs[0]) : 27;
-                            return row.bruttoar/(100 + afa)*100;
-                        })();
-                        //row.afa = parseFloat(tetel.afaertek[0].replace(',', '.'));
+                        row.nettoar = tetel.nettoar ? parseFloat(tetel.nettoar[0].replace(',', '.')) : row.bruttoar;
                         row.tipus = (tipus == '' ? TarifaTipusSelector.findTipus(row.termeknev) : tipus);
                         tetel.afakulcs ? row.afakulcs = parseInt(tetel.afakulcs[0]) : row.afakulcs = (function() {
                             return Math.round((row.bruttoar / row.nettoar - 1) * 100);
