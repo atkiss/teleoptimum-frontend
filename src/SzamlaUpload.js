@@ -43,73 +43,72 @@ export default class SzamlaUpload extends Component {
 
     handleFileUpoad(event) {
         let f = event.target.files[0]
-        console.log(f);
         let reader = new FileReader();
         reader.onloadend = () => {
-            let szamlaXml = JsonUtils.xmlToJson(new DOMParser().parseFromString(reader.result, "text/xml"));
-
-            this.setState({idoszak: szamlaXml.foszamla.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.foszamla.szamla.fejlec.szamlainfo.sorszam['#text']})
-            //this.setState({ idoszak: szamlaXml.szamla.fejlec.szamlainfo.idoszak['#text'], sorszam: szamlaXml.szamla.fejlec.szamlainfo.sorszam['#text'] })
-
-            let rows = [] //this.state.rows; dupla feltoltes
-            let telefonszamok = this.state.telefonszamok;
-            let brutto = this.state.brutto;
-            //szamlaXml.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
-            szamlaXml.foszamla.szamla.tetelek.kartyaszintutetelek.mobilszam.forEach(item => {
-                let telefonszam = item['@attributes'].ctn.trim();
-                telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
-                let forgalmidijTetelek = item.tavkozlesi_szolgaltatasok.forgalmidijak.tetel;
-                let havidijTetelek = item.tavkozlesi_szolgaltatasok.havidijak.tetel;
-                let mapTetel = (tetel, tipus) => {
-                    let row = {};
-                    row.id = rows.length + 1;
-                    row.telefonszam = telefonszam;
-                    row.termeknev = tetel.termeknev['#text'].trim();
-                    let parseMennyiseg = function(mennyiseg) {
-                        if (!mennyiseg) {
-                            return 1;
+            parseString(reader.result, (err, szamlaXml) => {
+                this.setState({idoszak: szamlaXml.foszamla.szamla[0].fejlec[0].szamlainfo[0].idoszak[0], sorszam: szamlaXml.foszamla.szamla[0].fejlec[0].szamlainfo[0].sorszam[0]})
+                let rows = [];
+                let telefonszamok = this.state.telefonszamok;
+                let brutto = this.state.brutto;
+                let mobilSzamok = szamlaXml.foszamla.szamla.reduce((szamok, szamla) => {
+                    return szamok.concat(szamla.tetelek[0].kartyaszintutetelek[0].mobilszam);
+                }, []);
+                mobilSzamok.forEach(item => {
+                    let telefonszam = item.$.ctn;
+                    telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
+                    let mapTetel = (tetel, tipus) => {
+                        let row = {};
+                        row.id = rows.length + 1;
+                        row.telefonszam = telefonszam;
+                        row.termeknev = tetel.termeknev[0];
+                        let parseMennyiseg = function(mennyiseg) {
+                            if (!mennyiseg) {
+                                return 1;
+                            }
+                            mennyiseg = mennyiseg[0];
+                            if (mennyiseg.match(/(.+):(.+):(.+)/)) {
+                                let timeInMinutes = 0;
+                                let idok = mennyiseg.split(":");
+                                timeInMinutes += parseInt(idok[0]) * 60;
+                                timeInMinutes += parseInt(idok[1]);
+                                timeInMinutes += parseInt(idok[2]) / 60;
+                                return +(timeInMinutes.toFixed(2));
+                            } else {
+                                return parseFloat(mennyiseg.replace(',', '.'));
+                            }
                         }
-                        mennyiseg = mennyiseg['#text'].trim();
-                        if (mennyiseg.match(/(.+):(.+):(.+)/)) {
-                            let timeInMinutes = 0;
-                            let idok = mennyiseg.split(":");
-                            timeInMinutes += parseInt(idok[0]) * 60;
-                            timeInMinutes += parseInt(idok[1]);
-                            timeInMinutes += parseInt(idok[2]) / 60;
-                            return +(timeInMinutes.toFixed(2));
-                        } else {
-                            return parseFloat(mennyiseg.replace(',', '.'));
+                        row.mennyiseg = parseMennyiseg(tetel.menny);
+                        tetel.mennyegys ? row.egyseg = tetel.mennyegys[0] : row.egyseg = '';
+                        row.bruttoar = parseFloat(tetel.bruttoar[0].replace(',', '.'));
+                        row.nettoar = tetel.nettoar ? parseFloat(tetel.nettoar[0].replace(',', '.')) : (function() {
+                            let afa = tetel.afakulcs ? parseInt(tetel.afakulcs[0]) : 27;
+                            return row.bruttoar/(100 + afa)*100;
+                        })();
+                        //row.afa = parseFloat(tetel.afaertek[0].replace(',', '.'));
+                        row.tipus = (tipus == '' ? TarifaTipusSelector.findTipus(row.termeknev) : tipus);
+                        tetel.afakulcs ? row.afakulcs = parseInt(tetel.afakulcs[0]) : row.afakulcs = (function() {
+                            return Math.round((row.bruttoar / row.nettoar - 1) * 100);
+                        })();
+                        let egysegAr = tetel.nettoegysegar ? tetel.nettoegysegar[0] : "";
+                        egysegAr.match(/\d+/) ? row.nettoegysegar = parseFloat(egysegAr.replace(',', '.')) : row.nettoegysegar = (function() {
+                            return row.nettoar / row.mennyiseg;
+                        })();
+                        if (row.nettoegysegar == 2600 && row.termeknev == 'Üzleti elõfizetés'){
+                            telefonszamok[telefonszam].tipus = 'korlatlan';
                         }
+                        if (row.termeknev == 'Üzleti elõfizetés'){
+                            telefonszamok[telefonszam].kartyatipus = 'hangalapu';
+                        }
+                        row.szamlaTipus = 'ismeretlen';
+                        row.tovabbszamlazva = true;
+                        brutto += row.bruttoar;
+                        row = this.editEuRoaming(row);
+                        rows.push(row);
                     }
-                    row.mennyiseg = parseMennyiseg(tetel.menny);
-                    tetel.mennyegys ? row.egyseg = tetel.mennyegys['#text'].trim() : row.egyseg = '';
-                    row.nettoar = parseFloat(tetel.nettoar['#text'].trim().replace(',', '.'));
-                    //row.afa = parseFloat(tetel.afaertek['#text'].trim().replace(',', '.'));
-                    row.bruttoar = parseFloat(tetel.bruttoar['#text'].trim().replace(',', '.'));
-                    row.tipus = (tipus == '' ? TarifaTipusSelector.findTipus(row.termeknev) : tipus);
-                    tetel.afakulcs ? row.afakulcs = parseInt(tetel.afakulcs['#text'].trim()) : row.afakulcs = (function() {
-                        return Math.round((row.bruttoar / row.nettoar - 1) * 100);
-                    })();
-                    let egysegAr = tetel.nettoegysegar ? tetel.nettoegysegar['#text'].trim() : "";
-                    egysegAr.match(/\d+/) ? row.nettoegysegar = parseFloat(egysegAr.replace(',', '.')) : row.nettoegysegar = (function() {
-                        return row.nettoar / row.mennyiseg;
-                    })();
-                    if (row.nettoegysegar == 2600 && row.termeknev == 'Üzleti elõfizetés'){
-                        telefonszamok[telefonszam].tipus = 'korlatlan';
-                    }
-                    if (row.termeknev == 'Üzleti elõfizetés'){
-                        telefonszamok[telefonszam].kartyatipus = 'hangalapu';
-                    }
-                    row.szamlaTipus = 'ismeretlen';
-                    row.tovabbszamlazva = true;
-                    brutto += row.bruttoar;
-                    row = this.editEuRoaming(row);
-                    rows.push(row);
-                }
-                JsonUtils.traverseJson(item, mapTetel, '');
+                    JsonUtils.traverseJson(item, mapTetel, '');
+                });
+                this.setState({ rows: rows, brutto: brutto });
             });
-            this.setState({ rows: rows, brutto: brutto })
-
         }
 
         // Read in the image file as a data URL.

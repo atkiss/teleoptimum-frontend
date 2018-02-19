@@ -5,7 +5,7 @@ export default class JsonUtils {
 						if (!!obj[i] && typeof(obj[i]) == "object") {
 								let node = obj[i];
 								tipus = (i == 'mobil_vasarlas' ? 'MOBIL_VASARLAS' : tipus)
-								if (node.hasOwnProperty('nettoar')) {
+								if (node.hasOwnProperty('bruttoar')) {
 										converter(node, tipus);
 								} else {
 										this.traverseJson(node, converter, tipus);
