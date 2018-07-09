@@ -54,6 +54,9 @@ export default class SzamlaUpload extends Component {
                     return szamok.concat(szamla.tetelek[0].kartyaszintutetelek[0].mobilszam);
                 }, []);
                 mobilSzamok.forEach(item => {
+                    if (item == null){
+                        return;
+                    }
                     let telefonszam = item.$.ctn;
                     telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
                     let mapTetel = (tetel, tipus) => {

@@ -28,6 +28,69 @@ export default class GenerateSzamla extends Component {
             });
     }
 
+    saveSzamla(){
+    	fetch(window.CONFIG.backend + '/szamlak', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password)
+			},
+			body: JSON.stringify([this.state.szamla])
+		})
+		.then((response) => {
+            if (response.ok){
+				return response.json();
+			}else{
+				throw Error("Szamla mentese nem sikerult: " + response.text());
+			}
+		})
+		.then(json => {
+			this.setState({szamlak: json})
+		})
+		.catch((ex) => {
+			console.log('parsing failed', ex)
+		});
+    }
+
+    printSzamla() {
+        this.state.szamla.hatarido = this.convertDate('hatarido');
+        this.state.szamla.kelte = this.convertDate('kelte');
+        this.state.szamla.teljesites = this.convertDate('teljesites');
+        this.state.szamla.idoszakKezdete = this.state.szamla.kelte;
+		this.state.szamla.idoszakVege = this.state.szamla.kelte;
+        let body = JSON.stringify([this.state.szamla])
+		fetch(window.CONFIG.backend + '/szamlak/generate', {
+			method: 'POST',
+			headers: {
+				'Authorization': 'Basic '+btoa(this.props.user.username + ":" + this.props.user.password),
+				'Content-Type': 'application/json'
+			},
+			body: body
+		})
+		.then((response) => {
+			if (response.ok){
+				return response.json();
+			}else{
+				throw Error("Szamla genrealas nem sikerult: " + response.text());
+			}
+		})
+		.then(json => {
+            let szamla = json[0];
+            szamla.hatarido = moment(szamla.hatarido);
+            szamla.kelte = moment(szamla.kelte);
+            szamla.teljesites = moment(szamla.teljesites);
+			this.setState({szamla: szamla})
+		})
+		.catch((ex) => {
+			console.log('parsing failed', ex)
+		});
+    }
+    
+    convertDate(fieldName){
+        let dateField = this.state.szamla[fieldName];
+        return dateField.format('YYYY-MM-DD');    
+    }
+
     createEmptySzamla(){
         return {
             szamlaSorszam: 'P000001',
@@ -124,6 +187,7 @@ export default class GenerateSzamla extends Component {
         let cim = ugyfel.cimek.find(cim => cim.tipus === 'LEVELEZESI');
         this.state.szamla.cim = cim;
         this.state.szamla.adoszam = ugyfel.adoszam;
+        this.state.szamla.email = ugyfel.email;
         let selectedTelefonszamok = this.telefonszamok.filter(it => it.ugyfelId == ugyfelId);
         this.setState({szamla: this.state.szamla, telefonszamok: selectedTelefonszamok});
     }
@@ -265,6 +329,16 @@ export default class GenerateSzamla extends Component {
                         </button>
                     </form>
                     <SzamlaDisplay szamla={this.state.szamla}/>
+                    <div className="row">
+                        <div className="col-2">
+                            <button type="button" className="btn btn-primary" onClick={this.saveSzamla.bind(this)}>
+                                <span className="glyphicon glyphicon-ok-circle"></span> Mentes
+                            </button>
+                        </div>
+                        <div className="col-10">
+
+                        </div>
+                    </div>
                 </div>
             </div>
         );
