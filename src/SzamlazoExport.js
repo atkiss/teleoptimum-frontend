@@ -74,7 +74,9 @@ export default class SzamlazoExport extends Component {
     convertData(rows){
         let data = "konto\tgkto\tbelegnr\tbuchdat\tleistdat\tbucod\tsteucod\tbetrag\tmwst\tsteuer\ttext\tzziel\tsymbol\tgegenbuchkz\tverbuchkz\tperiode\topbetrag\n";
         rows.forEach(row => {
-            let ugyfel = this.state.ugyfelek.find(ugyfel => ugyfel.nev.trim().toLowerCase() === row.ugyfel.trim().toLowerCase());
+            let ugyfel = this.state.ugyfelek.find(ugyfel => {
+                return this.replaceSpecialChars(ugyfel.nev.trim().toLowerCase()) === this.replaceSpecialChars(row.ugyfel.trim().toLowerCase());
+            });
             if (!ugyfel){
                 ugyfel = {
                     ugyfelKod: row.ugyfel
@@ -90,6 +92,18 @@ export default class SzamlazoExport extends Component {
             data += `${ugyfel.ugyfelKod}\t911100\t${row.sorszam}\t${row.kelt}\t${row.hatarido}\t1\t01\t${row.brutto}\t${row.afakulcs}\t${row.afa}\t${description}\t${row.hatarido}\tKI\tE\tA\t${period}\t${row.brutto}\n`;
         });
         return data;
+    }
+
+    replaceSpecialChars(str) {
+        return str.replace(/ö|õ|ó|ő|ü|û|ú|ű|í|á|é/gi, function (x) {
+            if(['ö','õ','ó','ő'].includes(x)){
+                return 'o';
+            } else if(['ü','û','ú','ű'].includes(x)){
+                return 'u';
+            } else {
+                return x;
+            }
+        }); 
     }
 
     render(){
