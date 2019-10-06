@@ -58,7 +58,9 @@ export default class SzamlaUpload extends Component {
                         return;
                     }
                     let telefonszam = item.$.ctn;
-                    telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
+                    if (!telefonszamok[telefonszam]) {
+                        telefonszamok[telefonszam] = { telefonszam: telefonszam, tipus: 'sima', kedvezmeny: 0, ugyfel: {}, kartyatipus: 'adat' };
+                    }
                     let mapTetel = (tetel, tipus) => {
                         let row = {};
                         row.id = rows.length + 1;
@@ -92,7 +94,7 @@ export default class SzamlaUpload extends Component {
                         egysegAr.match(/\d+/) ? row.nettoegysegar = parseFloat(egysegAr.replace(',', '.')) : row.nettoegysegar = (function() {
                             return row.nettoar / row.mennyiseg;
                         })();
-                        if (row.nettoegysegar == 2600 && row.termeknev == 'Üzleti elõfizetés'){
+                        if (row.nettoegysegar == 5000 && row.termeknev == 'Üzleti elõfizetés'){
                             telefonszamok[telefonszam].tipus = 'korlatlan';
                         }
                         if (row.termeknev == 'Üzleti elõfizetés'){
@@ -101,7 +103,6 @@ export default class SzamlaUpload extends Component {
                         row.szamlaTipus = 'ismeretlen';
                         row.tovabbszamlazva = true;
                         brutto += row.bruttoar;
-                        row = this.editEuRoaming(row);
                         rows.push(row);
                     }
                     JsonUtils.traverseJson(item, mapTetel, '');
@@ -114,12 +115,10 @@ export default class SzamlaUpload extends Component {
         reader.readAsText(f);
     }
 
-    editEuRoaming(row){
-        if (row.termeknev.toLowerCase().includes("roaming") && 
-                row.termeknev.toLowerCase().includes("1. zóna") &&
-                row.nettoegysegar == 8){
-            row.egysegAr = 12.0;
-            row.nettoegysegar = 12.0;
+    editEuRoaming(row) {
+        if (row.termeknev.toLowerCase().includes("roaming") && row.nettoegysegar == 6){
+            row.egysegAr = 9.0;
+            row.nettoegysegar = 9.0;
             row.nettoar = row.egysegAr * row.mennyiseg;
             row.bruttoar = row.nettoar * (100 + row.afakulcs) / 100;
         }
@@ -179,7 +178,7 @@ export default class SzamlaUpload extends Component {
                     this.findAndMergeRow(rows, row);
                 }
             });
-            this.setState({ rows: rows, step: 'DISCOUNTS' });
+            this.setState({ rows, step: 'DISCOUNTS' });
         } catch (e) {
             let results = this.state.results;
             results.merge = e;
@@ -211,6 +210,7 @@ export default class SzamlaUpload extends Component {
             }else if (this.state.telefonszamok[row.telefonszam].ugyfel.needsSpecialInvoice == 1){
                 return;
             } else {
+                newRow = this.editEuRoaming(newRow);
                 let tarifa = []
                 if (row.szamlaTipus == 'sima') {
                     tarifa = simaTarifa;
@@ -268,7 +268,7 @@ export default class SzamlaUpload extends Component {
         tetel.termeknev = 'Forgalmidij-kedvezmeny';
         tetel.mennyiseg = Math.min(telefonszamProp.kedvezmeny, 150);
         tetel.egyseg = 'perc';
-        tetel.nettoegysegar = -12;
+        tetel.nettoegysegar = -9;
         tetel.nettoar = tetel.nettoegysegar * tetel.mennyiseg;
         tetel.afakulcs = 27;
         tetel.bruttoar = tetel.nettoar * (100 + tetel.afakulcs) / 100;

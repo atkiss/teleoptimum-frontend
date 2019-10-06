@@ -36,18 +36,21 @@ export default class SzamlazoExport extends Component {
                     return null;
                 }
                 let columns = row.split("\t");
-                return {
-                    sorszam: parseInt(columns[0].substring(1, columns[0].length)),
-                    megnevezes: columns[1],
-                    egysegar: columns[5],
-                    afakulcs: columns[6],
-                    netto: parseFloat(columns[7]),
-                    afa: parseFloat(columns[8]),
-                    brutto: parseFloat(columns[9]),
-                    kelt: columns[10],
-                    hatarido: columns[11],
-                    ugyfel: columns[15]
+                if (columns.length > 0) {
+                    return {
+                        sorszam: parseInt(columns[0].substring(1, columns[0].length)),
+                        megnevezes: columns[1],
+                        egysegar: columns[5],
+                        afakulcs: columns[6],
+                        netto: parseFloat(columns[7]),
+                        afa: parseFloat(columns[8]),
+                        brutto: parseFloat(columns[9]),
+                        kelt: columns[10],
+                        hatarido: columns[11],
+                        ugyfel: columns[15]
+                    }
                 }
+                return null;
             }).filter(item => item !== null);
             this.setState({rows: rows});
             let converted = this.convertData(this.reduceData(rows));

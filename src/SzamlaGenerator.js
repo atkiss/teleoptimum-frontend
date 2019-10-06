@@ -23,7 +23,7 @@ export default class SzamlaGenerator extends Component{
 				}
 			}
 			let hatarIdo = new Date();
-			hatarIdo.setDate(hatarIdo.getDate() + 10);
+			hatarIdo.setDate(hatarIdo.getDate() + 8);
 			let szamlaTempId = 0;
 			for (let ugyfel of ugyfelek){
 				if (ugyfel.needsSpecialInvoice === 1){

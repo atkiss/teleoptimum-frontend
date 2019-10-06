@@ -120,7 +120,7 @@ export class TarifaTipusSelector {
       return Enums.HAVIDIJ.value;
     }
     if (tarifaCsomag.search(/(.*)\bmobilhívás\b(.*)/) >= 0){
-      if (tarifaCsomag.search(/(.*)\bt-mobile\b(.*)/) >= 0){
+      if (tarifaCsomag.search(/(.*)\bmagyar telekom\b(.*)/) >= 0){
         return Enums.TMOBILE_MOBIL.value;
       }else if (tarifaCsomag.search(/(.*)\bvodafone\b(.*)/) >= 0){
         return Enums.VODAFON_MOBIL.value;
